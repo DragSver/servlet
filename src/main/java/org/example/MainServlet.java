@@ -4,12 +4,12 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -17,38 +17,40 @@ import java.util.List;
 public class MainServlet extends HttpServlet {
     public SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss a");
 
-
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        User user = UserRepository.getUserByCookie(req.getCookies());
+        if (user == null) {
+            resp.sendRedirect("/login");
+            return;
+        }
         String path = req.getParameter("path");
         File file;
-        if (path == null) {
-            file = new File("D:\\My");
-        }
-        else {
+        if (path == null || !path.contains("D:/My/" + user.getLogin())) {
+            file = new File("D:\\My\\" + user.getLogin());
+            file.mkdir();
+        } else {
             file = new File(path.replace("%20", " "));
         }
         if (file.isDirectory()) {
-            getIsDirectory(file, req, resp);
-        }
-        else {
+            getIsDirectory(file, user, req, resp);
+        } else {
             download(file, resp);
         }
     }
 
-    private void getIsDirectory(File file, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<File> elements = Arrays.asList(file.listFiles());
+    private void getIsDirectory(File file, User user, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        List<File> fileList = Arrays.asList(file.listFiles());
         String date = format.format(new Date());
-        req.setAttribute("elements", elements);
-        req.setAttribute("date", date);
         req.setAttribute("format", format);
-        req.setAttribute("contextPath", req.getContextPath());
+        req.setAttribute("date", date);
         req.setAttribute("path", file.getAbsolutePath());
+        req.setAttribute("contextPath", req.getContextPath());
+        req.setAttribute("fileList", fileList);
+        req.setAttribute("user", user);
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("explore.jsp");
         requestDispatcher.forward(req, resp);
     }
-
     private void download(File file, HttpServletResponse resp) {
         resp.setContentType("text/plain");
         resp.setHeader("Content-disposition", "attachment; filename=" + file.getName());
@@ -66,6 +68,12 @@ public class MainServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null)
+            for (Cookie cookie : cookies) {
+                cookie.setMaxAge(0);
+                resp.addCookie(cookie);
+            }
+        resp.sendRedirect("/login");
     }
 }
