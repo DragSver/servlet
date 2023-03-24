@@ -1,5 +1,8 @@
 package org.example;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -16,6 +19,24 @@ import java.util.List;
 
 public class MainServlet extends HttpServlet {
     public SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss a");
+
+    public static Connection getConnection() throws SQLException {
+        String url = "jdbc:mysql://localhost:3306/servlet";
+        String user = "root";
+        String password = "root";
+        Connection conn = DriverManager.getConnection(url, user, password);
+        return conn;
+    }
+
+    public static void main(String[] args) {
+        try {
+            Connection conn = getConnection();
+            // выполняйте здесь нужные операции с базой данных
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
