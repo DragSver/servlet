@@ -1,5 +1,8 @@
 package org.example;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -19,23 +22,28 @@ public class MainServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user = UserRepository.getUserByCookie(req.getCookies());
-        if (user == null) {
-            resp.sendRedirect("/login");
-            return;
-        }
-        String path = req.getParameter("path");
-        File file;
-        if (path == null || !path.contains("D:/My/" + user.getLogin())) {
-            file = new File("D:\\My\\" + user.getLogin());
-            file.mkdir();
-        } else {
-            file = new File(path.replace("%20", " "));
-        }
-        if (file.isDirectory()) {
-            getIsDirectory(file, user, req, resp);
-        } else {
-            download(file, resp);
+        try {
+            if (DBService.connection == null) DBService.getConnection();
+            User user = UserRepository.getUserByCookie(req.getCookies());
+            if (user == null) {
+                resp.sendRedirect("/login");
+                return;
+            }
+            String path = req.getParameter("path");
+            File file;
+            if (path == null || !path.contains("D:/My/" + user.getLogin())) {
+                file = new File("D:\\My\\" + user.getLogin());
+                file.mkdir();
+            } else {
+                file = new File(path.replace("%20", " "));
+            }
+            if (file.isDirectory()) {
+                getIsDirectory(file, user, req, resp);
+            } else {
+                download(file, resp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -68,12 +76,17 @@ public class MainServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Cookie[] cookies = req.getCookies();
-        if (cookies != null)
-            for (Cookie cookie : cookies) {
-                cookie.setMaxAge(0);
-                resp.addCookie(cookie);
-            }
-        resp.sendRedirect("/login");
+        try {
+            if (DBService.connection == null) DBService.getConnection();
+            Cookie[] cookies = req.getCookies();
+            if (cookies != null)
+                for (Cookie cookie : cookies) {
+                    cookie.setMaxAge(0);
+                    resp.addCookie(cookie);
+                }
+            resp.sendRedirect("/login");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
