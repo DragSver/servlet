@@ -20,43 +20,30 @@ import java.util.List;
 public class MainServlet extends HttpServlet {
     public SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss a");
 
-    public static Connection getConnection() throws SQLException {
-        String url = "jdbc:mysql://localhost:3306/servlet";
-        String user = "root";
-        String password = "root";
-        Connection conn = DriverManager.getConnection(url, user, password);
-        return conn;
-    }
-
-    public static void main(String[] args) {
-        try {
-            Connection conn = getConnection();
-            // выполняйте здесь нужные операции с базой данных
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        User user = UserRepository.getUserByCookie(req.getCookies());
-        if (user == null) {
-            resp.sendRedirect("/login");
-            return;
-        }
-        String path = req.getParameter("path");
-        File file;
-        if (path == null || !path.contains("D:/My/" + user.getLogin())) {
-            file = new File("D:\\My\\" + user.getLogin());
-            file.mkdir();
-        } else {
-            file = new File(path.replace("%20", " "));
-        }
-        if (file.isDirectory()) {
-            getIsDirectory(file, user, req, resp);
-        } else {
-            download(file, resp);
+        try {
+            if (DBService.connection == null) DBService.getConnection();
+            User user = UserRepository.getUserByCookie(req.getCookies());
+            if (user == null) {
+                resp.sendRedirect("/login");
+                return;
+            }
+            String path = req.getParameter("path");
+            File file;
+            if (path == null || !path.contains("D:/My/" + user.getLogin())) {
+                file = new File("D:\\My\\" + user.getLogin());
+                file.mkdir();
+            } else {
+                file = new File(path.replace("%20", " "));
+            }
+            if (file.isDirectory()) {
+                getIsDirectory(file, user, req, resp);
+            } else {
+                download(file, resp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -89,12 +76,17 @@ public class MainServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Cookie[] cookies = req.getCookies();
-        if (cookies != null)
-            for (Cookie cookie : cookies) {
-                cookie.setMaxAge(0);
-                resp.addCookie(cookie);
-            }
-        resp.sendRedirect("/login");
+        try {
+            if (DBService.connection == null) DBService.getConnection();
+            Cookie[] cookies = req.getCookies();
+            if (cookies != null)
+                for (Cookie cookie : cookies) {
+                    cookie.setMaxAge(0);
+                    resp.addCookie(cookie);
+                }
+            resp.sendRedirect("/login");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
