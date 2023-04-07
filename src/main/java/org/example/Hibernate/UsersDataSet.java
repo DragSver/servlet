@@ -1,4 +1,4 @@
-package org.example.ORM;
+package org.example.Hibernate;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -11,19 +11,20 @@ import javax.persistence.Table;
 @Table(name="users")
 public class UsersDataSet {
     @Id
-    @Column private int id;
-    @Column private String email;
     @Column private String login;
     @Column private String password;
+    @Column private String email;
 
-    public UsersDataSet(int id, String email, String login, String password) {
-        this.id = id;
+    public UsersDataSet(String login, String password, String email) {
         this.email = email;
         this.login = login;
         this.password = password;
     }
 
-    public int getId() {return id;}
+    public UsersDataSet() {
+
+    }
+
     public String getEmail() {
         return email;
     }

@@ -1,11 +1,13 @@
-package org.example;
+package org.example.Servlets;
+
+import org.example.Error;
+import org.example.Hibernate.UsersDataSet;
+import org.example.UserRepository;
 
 import javax.servlet.*;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 
-//@WebServlet("/registration")
 public class RegistrationServlet extends HttpServlet {
 
     UserRepository userRepository = new UserRepository();
@@ -13,7 +15,7 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        User user = userRepository.getUserByCookie(req.getCookies());
+        UsersDataSet user = userRepository.getUserByCookie(req.getCookies());
         if (user != null) {
             resp.sendRedirect("/");
             return;
@@ -34,14 +36,14 @@ public class RegistrationServlet extends HttpServlet {
             Error.getError(req, resp, "Нужно заполнить все поля", "registration.jsp");
         }
 
-        User user = userRepository.getUserByLogin(login);
+        UsersDataSet user = userRepository.getUserByLogin(login);
 
         if (user != null || !userRepository.emailIsUnique(email))
             Error.getError(req, resp, "Пользователь с такой почтой или логином уже существует", "registration.jsp");
-        else if (!User.thesePasswordsMatch(firstPassword, secondPassword))
+        else if (!UsersDataSet.thesePasswordsMatch(firstPassword, secondPassword))
             Error.getError(req, resp, "Пароли не совпадают", "registration.jsp");
         else {
-            User.create(email, login, firstPassword);
+            new UsersDataSet(email, login, firstPassword);
             resp.addCookie(new Cookie("login", login));
         }
 

@@ -1,5 +1,6 @@
-package org.example;
+package org.example.JDBC;
 
+import org.example.UserRepository;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;

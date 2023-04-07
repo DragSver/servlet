@@ -1,4 +1,7 @@
-package org.example;
+package org.example.Servlets;
+
+import org.example.Hibernate.UsersDataSet;
+import org.example.UserRepository;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -20,7 +23,7 @@ public class MainServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        User user = userRepository.getUserByCookie(req.getCookies());
+        UsersDataSet user = userRepository.getUserByCookie(req.getCookies());
 
         if (user == null) {
             resp.sendRedirect("/login");
@@ -42,7 +45,7 @@ public class MainServlet extends HttpServlet {
         }
     }
 
-    private void getIsDirectory(File file, User user, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void getIsDirectory(File file, UsersDataSet user, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<File> fileList = Arrays.asList(file.listFiles());
         String date = format.format(new Date());
         req.setAttribute("format", format);

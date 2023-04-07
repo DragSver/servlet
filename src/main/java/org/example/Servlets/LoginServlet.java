@@ -1,15 +1,17 @@
-package org.example;
+package org.example.Servlets;
+
+import org.example.Error;
+import org.example.Hibernate.UsersDataSet;
+import org.example.UserRepository;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-//@WebServlet("/authorization")
 public class LoginServlet extends HttpServlet {
 
     UserRepository userRepository = new UserRepository();
@@ -17,7 +19,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        User user = userRepository.getUserByCookie(req.getCookies());
+        UsersDataSet user = userRepository.getUserByCookie(req.getCookies());
         if (user != null) {
             resp.sendRedirect("/");
             return;
@@ -35,7 +37,7 @@ public class LoginServlet extends HttpServlet {
         if (login.equals("") || password.equals(""))
             Error.getError(req, resp, "Нужно заполнить оба поля", "login.jsp");
 
-        User user = userRepository.getUserByLogin(login);
+        UsersDataSet user = userRepository.getUserByLogin(login);
 
         if (user == null)
             Error.getError(req, resp, "Пользователя с таким логином не существует", "login.jsp");

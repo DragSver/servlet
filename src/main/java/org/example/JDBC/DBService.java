@@ -1,7 +1,5 @@
-package org.example;
+package org.example.JDBC;
 
-import org.example.ORM.UsersDataSet;
-import org.hibernate.cfg.Configuration;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
@@ -11,30 +9,10 @@ public class DBService {
     private static final String user = "root";
     private static final String password = "root";
     private static final String driver = "com.mysql.cj.jdbc.Driver";
-    private static final String showSql = "true";
-    private static final String dialect = "org.hibernate.dialect.MySQLDialect";
-    private static final String hdm2ddl = "update";
     private final Connection connection;
-//    private final Configuration configuration;
 
     public DBService() {
         this.connection = getConnection();
-//        this.configuration = getConfiguration();
-    }
-
-    public Configuration getConfiguration() {
-        Configuration configuration = new Configuration();
-        configuration.addAnnotatedClass(UsersDataSet.class);
-
-        configuration.setProperty("hibernate.connection.driver_class", driver);
-        configuration.setProperty("hibernate.connection.url", url);
-        configuration.setProperty("hibernate.connection.userName", user);
-        configuration.setProperty("hibernate.connection.password", password);
-        configuration.setProperty("hibernate.dialect", dialect);
-        configuration.setProperty("hibernate.show_sql", showSql);
-        configuration.setProperty("hibernate.hbm2ddl.auto", hdm2ddl);
-
-        return configuration;
     }
 
     public Connection getConnection(){
