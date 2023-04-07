@@ -1,26 +1,29 @@
-package org.example;
+package org.example.ORM;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.SQLException;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-public class User {
-    private String email;
-    private String login;
-    private String password;
+@Entity
+@Table(name="users")
+public class UsersDataSet {
+    @Id
+    @Column private int id;
+    @Column private String email;
+    @Column private String login;
+    @Column private String password;
 
-    private static final UserRepository userRepository = new UserRepository();
-
-
-    public User(String email, String login, String password) {
+    public UsersDataSet(int id, String email, String login, String password) {
+        this.id = id;
         this.email = email;
         this.login = login;
         this.password = password;
     }
 
-    public static void create(@NotNull String email, @NotNull String login, @NotNull String password) {
-        userRepository.add(login, password, email);
-    }
+    public int getId() {return id;}
     public String getEmail() {
         return email;
     }
@@ -30,6 +33,7 @@ public class User {
     public String getPassword() {
         return password;
     }
+
     public static boolean thesePasswordsMatch(@NotNull String firstPassword, @NotNull String secondPassword) {
         return firstPassword.equals(secondPassword);
     }
