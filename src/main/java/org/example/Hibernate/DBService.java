@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class DBService {
     private static final String url = "jdbc:mysql://localhost:3306/servlet";
     private static final String user = "root";
-    private static final String password = "root";
+    private static final String password = "dawr";
     private static final String driver = "com.mysql.cj.jdbc.Driver";
     private static final String showSql = "true";
     private static final String dialect = "org.hibernate.dialect.MySQL5Dialect";

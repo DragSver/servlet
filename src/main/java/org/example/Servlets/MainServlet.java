@@ -32,8 +32,8 @@ public class MainServlet extends HttpServlet {
 
         String path = req.getParameter("path");
         File file;
-        if (path == null || !path.contains("D:/My/" + user.getLogin())) {
-            file = new File("D:\\My\\" + user.getLogin());
+        if (path == null || !path.contains("/repo/" + user.getLogin())) {
+            file = new File("D:\\Projects\\Servlet\\repo\\" + user.getLogin());
             file.mkdir();
         } else {
             file = new File(path.replace("%20", " "));

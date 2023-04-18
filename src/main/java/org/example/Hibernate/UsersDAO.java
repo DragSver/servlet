@@ -20,6 +20,6 @@ public class UsersDAO {
     }
 
     public String insertUser(String login, String password, String email) throws HibernateException {
-        return (String) session.save(new UsersDataSet(email, login, password));
+        return (String) session.save(new UsersDataSet(login, password, email));
     }
 }

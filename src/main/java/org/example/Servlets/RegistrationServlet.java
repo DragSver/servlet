@@ -35,15 +35,12 @@ public class RegistrationServlet extends HttpServlet {
         if (login.equals("") || email.equals("") || firstPassword.equals("") || secondPassword.equals("")) {
             Error.getError(req, resp, "Нужно заполнить все поля", "registration.jsp");
         }
-
-        UsersDataSet user = userRepository.getUserByLogin(login);
-
-        if (user != null || !userRepository.emailIsUnique(email))
+        if (!userRepository.loginIsUnique(login) || !userRepository.emailIsUnique(email))
             Error.getError(req, resp, "Пользователь с такой почтой или логином уже существует", "registration.jsp");
         else if (!UsersDataSet.thesePasswordsMatch(firstPassword, secondPassword))
             Error.getError(req, resp, "Пароли не совпадают", "registration.jsp");
         else {
-            new UsersDataSet(email, login, firstPassword);
+            userRepository.add(login, firstPassword, email);
             resp.addCookie(new Cookie("login", login));
         }
 
