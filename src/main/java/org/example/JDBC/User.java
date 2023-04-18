@@ -1,5 +1,6 @@
-package org.example;
+package org.example.JDBC;
 
+import org.example.UserRepository;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.SQLException;
@@ -9,14 +10,17 @@ public class User {
     private String login;
     private String password;
 
+    private static final UserRepository userRepository = new UserRepository();
+
+
     public User(String email, String login, String password) {
         this.email = email;
         this.login = login;
         this.password = password;
     }
 
-    public static void create(@NotNull String email, @NotNull String login, @NotNull String password) throws SQLException {
-        UserRepository.add(new User(email, login, password));
+    public static void create(@NotNull String email, @NotNull String login, @NotNull String password) {
+        userRepository.add(login, password, email);
     }
     public String getEmail() {
         return email;
